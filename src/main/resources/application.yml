@@ -1,6 +1,6 @@
 spring:
   application:
-    name: diurnal-application-service
+    name: diurnal-interaction-service
     heroku: ${spring.application.name}.herokuapp.com
   profiles:
     active: ${SPRING_PROFILE:local}
