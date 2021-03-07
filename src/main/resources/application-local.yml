@@ -1,0 +1,4 @@
+mail:
+  otp:
+    timeout:
+      minutes: 1
