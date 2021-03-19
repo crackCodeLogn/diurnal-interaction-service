@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter;
@@ -19,6 +20,7 @@ import java.net.UnknownHostException;
 
 import static com.vv.personal.diurnal.interaction.constants.Constants.*;
 
+@ComponentScan({"com.vv.personal.diurnal.interaction", "com.vv.personal.diurnal.ping"})
 @SpringBootApplication
 public class DiurnalInteractionServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiurnalInteractionServer.class);
@@ -39,7 +41,7 @@ public class DiurnalInteractionServer {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.vv.personal.diurnal.interaction"))
+                .apis(RequestHandlerSelectors.basePackage("com.vv.personal.diurnal"))
                 .build();
     }
 
