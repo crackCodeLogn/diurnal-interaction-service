@@ -73,6 +73,7 @@ public class MailController {
         if (otpMap.containsKey(email)) {
             if (otpMap.get(email).equals(otpMail.getOtp())) {
                 LOGGER.info("User with [{}] verified!", email);
+                removeOtpFromMap(email);
                 return RESPOND_TRUE_BOOL;
             } else {
                 LOGGER.warn("Incorrect OTP entered by user");
