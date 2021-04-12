@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.vv.personal.diurnal.interaction.constants.Constants.RESPOND_FALSE_BOOL;
@@ -33,6 +34,7 @@ public class MailController {
     private OtpConfig otpConfig;
 
     private static final ConcurrentHashMap<String, Integer> otpMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Timer> otpTimerMap = new ConcurrentHashMap<>();
 
     @ApiOperation(value = "generate mail-otp", hidden = true)
     @PostMapping("/generate/otp")
@@ -43,19 +45,18 @@ public class MailController {
             return RESPOND_FALSE_BOOL;
         }
         final Integer otp = DiurnalUtil.generateOtp(otpConfig.getOtpStartRangeForMail(), otpConfig.getOtpEndRangeForMail());
-        LOGGER.info("Generated OTP for [{}]: {}", email, otp);
-        insertOtpInMap(email, otp);
+        Timer timer = mailConfig.generateTimer();
+        insertOtpAndTimerInMap(email, otp, timer);
 
         LOGGER.info("Initiating mail generation for OTP");
         String mailBody = String.format(mailConfig.getOtpBody(), mailConfig.getOtpTimeoutMinutes(), otp);
         if (mailConfig.emailSender().sendOtpMessage(mailConfig.diurnalMailMessage(), email, mailConfig.getOtpTitle(), mailBody)) {
-            TimerUtil.scheduleTimer(mailConfig.generateTimer(),
-                    TimerUtil.generateTimedTask(this::removeOtpFromMap, email),
+            TimerUtil.scheduleTimer(timer, TimerUtil.generateTimedTask(this::removeOtpAndTimerFromMap, email),
                     mailConfig.getOtpTimeoutMinutes() * 60);
             return RESPOND_TRUE_BOOL;
         } else {
             LOGGER.warn("Failed to generate mail-otp for [{}]", otpMail);
-            removeOtpFromMap(email);
+            removeOtpAndTimerFromMap(email);
         }
         return RESPOND_FALSE_BOOL;
     }
@@ -73,7 +74,7 @@ public class MailController {
         if (otpMap.containsKey(email)) {
             if (otpMap.get(email).equals(otpMail.getOtp())) {
                 LOGGER.info("User with [{}] verified!", email);
-                removeOtpFromMap(email);
+                removeOtpAndTimerFromMap(email);
                 return RESPOND_TRUE_BOOL;
             } else {
                 LOGGER.warn("Incorrect OTP entered by user");
@@ -101,12 +102,22 @@ public class MailController {
         return email.toLowerCase().trim();
     }
 
-    private void insertOtpInMap(String rxMail, Integer otp) {
+    private void insertOtpAndTimerInMap(String rxMail, Integer otp, Timer timer) {
+        LOGGER.info("Generated OTP for [{}]: {}, and inserting in otp-map", rxMail, otp);
         otpMap.putIfAbsent(rxMail, otp);
+        LOGGER.info("Generated Timer for [{}]: {} and inserting in otp-timer-map", rxMail, timer);
+        otpTimerMap.putIfAbsent(rxMail, timer);
     }
 
-    private Integer removeOtpFromMap(String mailToRemove) {
-        LOGGER.info("Removing [{}] from map", mailToRemove);
+    private Integer removeOtpAndTimerFromMap(String mailToRemove) {
+        LOGGER.info("Removing [{}] from otp-timer-map", mailToRemove);
+        Timer timer = otpTimerMap.get(mailToRemove);
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+        otpTimerMap.remove(mailToRemove);
+        LOGGER.info("Removing [{}] from otp-map", mailToRemove);
         return otpMap.remove(mailToRemove);
     }
 

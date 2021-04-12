@@ -23,10 +23,10 @@ mail:
   user: ${MAIL_DAILY_BILLZ}
   cred: ${MAIL_DAILY_BILLZ_CREDENTIAL}
   otp:
-    title: ${MAIL_DAILY_BILLZ_TITLE:"Your Daily Billz OTP is here"}
+    title: ${MAIL_DAILY_BILLZ_TITLE:Your Daily Billz OTP is here}
     body: "OTP valid for next <b>%d minutes</b>: <b><u>%s</u></b>"
     timeout:
-      minutes: ${MAIL_OTP_TIMEOUT_MINUTES:10}
+      minutes: ${MAIL_OTP_TIMEOUT_MINUTES:11}
 
 otp:
   mail:
