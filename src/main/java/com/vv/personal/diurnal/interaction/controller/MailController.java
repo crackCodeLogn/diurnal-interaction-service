@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -97,6 +99,21 @@ public class MailController {
     @GetMapping("/map-otp")
     public String getOtpMap() {
         return otpMap.toString();
+    }
+
+    @GetMapping("/manual/clear/otp/all")
+    public void clearAllOtp() {
+        LOGGER.info("Initiating clear all otp effort");
+        Set<String> emailsInEffect = new HashSet<>(otpMap.keySet());
+        if (emailsInEffect.isEmpty()) return;
+        emailsInEffect.forEach(this::removeOtpAndTimerFromMap);
+        LOGGER.info("All otp cleared!");
+    }
+
+    @GetMapping("/manual/clear/otp/")
+    public void clearOtp(@RequestParam String email) {
+        LOGGER.info("Initiating clear otp for [{}]", email);
+        removeOtpAndTimerFromMap(email);
     }
 
     private String refineEmail(String email) {
