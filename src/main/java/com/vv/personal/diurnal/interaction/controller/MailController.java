@@ -41,8 +41,9 @@ public class MailController {
     public ResponsePrimitiveProto.ResponsePrimitive generateOtp(@RequestBody OtpMailProto.OtpMail otpMail) {
         final String email = refineEmail(otpMail.getEmail());
         if (otpMap.containsKey(email)) {
-            LOGGER.warn("OTP already sent. Please try again after {} minutes", mailConfig.getOtpTimeoutMinutes());
-            return RESPOND_FALSE_BOOL;
+            LOGGER.warn("OTP already sent for [{}]. Use that!", email);
+            //return RESPOND_FALSE_BOOL;
+            return RESPOND_TRUE_BOOL;
         }
         final Integer otp = DiurnalUtil.generateOtp(otpConfig.getOtpStartRangeForMail(), otpConfig.getOtpEndRangeForMail());
         Timer timer = mailConfig.generateTimer();
