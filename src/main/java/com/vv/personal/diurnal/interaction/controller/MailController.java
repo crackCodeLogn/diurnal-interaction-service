@@ -2,90 +2,98 @@ package com.vv.personal.diurnal.interaction.controller;
 
 import com.vv.personal.diurnal.artifactory.generated.OtpMailProto;
 import com.vv.personal.diurnal.artifactory.generated.ResponsePrimitiveProto;
-import com.vv.personal.diurnal.interaction.config.MailConfig;
+import com.vv.personal.diurnal.interaction.config.BeanStore;
+import com.vv.personal.diurnal.interaction.config.MailOtpConfig;
 import com.vv.personal.diurnal.interaction.config.OtpConfig;
 import com.vv.personal.diurnal.interaction.util.DiurnalUtil;
 import com.vv.personal.diurnal.interaction.util.TimerUtil;
-import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.vv.personal.diurnal.interaction.constants.Constants.RESPOND_FALSE_BOOL;
-import static com.vv.personal.diurnal.interaction.constants.Constants.RESPOND_TRUE_BOOL;
 import static com.vv.personal.diurnal.interaction.util.DiurnalUtil.generateOtpMail;
 
 /**
  * @author Vivek
  * @since 07/03/21
  */
+@Slf4j
 @RequestMapping("/diurnal/mail")
 @RestController("mail-controller")
+@SecurityScheme(securitySchemeName = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class MailController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailController.class);
+    private static final ResponsePrimitiveProto.ResponsePrimitive RESPOND_TRUE_BOOL = ResponsePrimitiveProto.ResponsePrimitive.newBuilder().setBoolResponse(true).build();
+    private static final ResponsePrimitiveProto.ResponsePrimitive RESPOND_FALSE_BOOL = ResponsePrimitiveProto.ResponsePrimitive.newBuilder().setBoolResponse(false).build();
 
-    @Autowired
-    private MailConfig mailConfig;
-    @Autowired
-    private OtpConfig otpConfig;
+    @Inject
+    BeanStore beanStore;
+    @Inject
+    OtpConfig otpConfig;
+    @Inject
+    MailOtpConfig mailOtpConfig;
 
     private static final ConcurrentHashMap<String, Integer> otpMap = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Timer> otpTimerMap = new ConcurrentHashMap<>();
 
-    @ApiOperation(value = "generate mail-otp", hidden = true)
     @PostMapping("/generate/otp")
+    @Secured("user")
+    @Consumes("application/x-protobuf")
+    @Produces("application/x-protobuf")
     public ResponsePrimitiveProto.ResponsePrimitive generateOtp(@RequestBody OtpMailProto.OtpMail otpMail) {
         final String email = refineEmail(otpMail.getEmail());
         if (otpMap.containsKey(email)) {
-            LOGGER.warn("OTP already sent for [{}]. Use that!", email);
-            //return RESPOND_FALSE_BOOL;
+            log.warn("OTP already sent for [{}]. Use that!", email);
             return RESPOND_TRUE_BOOL;
         }
         final Integer otp = DiurnalUtil.generateOtp(otpConfig.getOtpStartRangeForMail(), otpConfig.getOtpEndRangeForMail());
-        Timer timer = mailConfig.generateTimer();
+        Timer timer = beanStore.generateTimer();
         insertOtpAndTimerInMap(email, otp, timer);
 
-        LOGGER.info("Initiating mail generation for OTP");
-        String mailBody = String.format(mailConfig.getOtpBody(), mailConfig.getOtpTimeoutMinutes(), otp);
-        if (mailConfig.emailSender().sendOtpMessage(mailConfig.diurnalMailMessage(), email, mailConfig.getOtpTitle(), mailBody)) {
+        log.info("Initiating mail generation for OTP");
+        String mailBody = String.format(mailOtpConfig.body(), mailOtpConfig.timeoutMinutes(), otp);
+        if (beanStore.emailSender().sendOtpMessage(beanStore.diurnalMailMessage(), email, mailOtpConfig.title(), mailBody)) {
             TimerUtil.scheduleTimer(timer, TimerUtil.generateTimedTask(this::removeOtpAndTimerFromMap, email),
-                    mailConfig.getOtpTimeoutMinutes() * 60);
+                    mailOtpConfig.timeoutMinutes() * 60L);
             return RESPOND_TRUE_BOOL;
         } else {
-            LOGGER.warn("Failed to generate mail-otp for [{}]", otpMail);
+            log.warn("Failed to generate mail-otp for [{}]", otpMail);
             removeOtpAndTimerFromMap(email);
         }
         return RESPOND_FALSE_BOOL;
     }
 
+    @Secured("user")
     @GetMapping("/generate/manual/otp")
     public Boolean generateOtpManually(@RequestParam String rxEmail) {
         return generateOtp(generateOtpMail(rxEmail))
                 .getBoolResponse();
     }
 
-    @ApiOperation(value = "verify otp", hidden = true)
     @PostMapping("/verify/otp")
     public ResponsePrimitiveProto.ResponsePrimitive verifyOtp(@RequestBody OtpMailProto.OtpMail otpMail) {
         final String email = refineEmail(otpMail.getEmail());
         if (otpMap.containsKey(email)) {
             if (otpMap.get(email).equals(otpMail.getOtp())) {
-                LOGGER.info("User with [{}] verified!", email);
+                log.info("User with [{}] verified!", email);
                 removeOtpAndTimerFromMap(email);
                 return RESPOND_TRUE_BOOL;
             } else {
-                LOGGER.warn("Incorrect OTP entered by user");
+                log.warn("Incorrect OTP entered by user");
             }
         } else {
-            LOGGER.warn("Enquired mail's OTP is no longer in cache");
+            log.warn("Enquired mail's OTP is no longer in cache");
         }
-        LOGGER.error("Denied verification!");
+        log.error("Denied verification!");
         return RESPOND_FALSE_BOOL;
     }
 
@@ -103,16 +111,16 @@ public class MailController {
 
     @GetMapping("/manual/clear/otp/all")
     public void clearAllOtp() {
-        LOGGER.info("Initiating clear all otp effort");
+        log.info("Initiating clear all otp effort");
         Set<String> emailsInEffect = new HashSet<>(otpMap.keySet());
         if (emailsInEffect.isEmpty()) return;
         emailsInEffect.forEach(this::removeOtpAndTimerFromMap);
-        LOGGER.info("All otp cleared!");
+        log.info("All otp cleared!");
     }
 
     @GetMapping("/manual/clear/otp/")
     public void clearOtp(@RequestParam String email) {
-        LOGGER.info("Initiating clear otp for [{}]", email);
+        log.info("Initiating clear otp for [{}]", email);
         removeOtpAndTimerFromMap(email);
     }
 
@@ -121,22 +129,21 @@ public class MailController {
     }
 
     private void insertOtpAndTimerInMap(String rxMail, Integer otp, Timer timer) {
-        LOGGER.info("Generated OTP for [{}]: {}, and inserting in otp-map", rxMail, otp);
+        log.info("Generated OTP for [{}]: {}, and inserting in otp-map", rxMail, otp);
         otpMap.putIfAbsent(rxMail, otp);
-        LOGGER.info("Generated Timer for [{}]: {} and inserting in otp-timer-map", rxMail, timer);
+        log.info("Generated Timer for [{}]: {} and inserting in otp-timer-map", rxMail, timer);
         otpTimerMap.putIfAbsent(rxMail, timer);
     }
 
     private Integer removeOtpAndTimerFromMap(String mailToRemove) {
-        LOGGER.info("Removing [{}] from otp-timer-map", mailToRemove);
+        log.info("Removing [{}] from otp-timer-map", mailToRemove);
         Timer timer = otpTimerMap.get(mailToRemove);
         if (timer != null) {
             timer.cancel();
             timer.purge();
         }
         otpTimerMap.remove(mailToRemove);
-        LOGGER.info("Removing [{}] from otp-map", mailToRemove);
+        log.info("Removing [{}] from otp-map", mailToRemove);
         return otpMap.remove(mailToRemove);
     }
-
 }

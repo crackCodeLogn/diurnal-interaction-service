@@ -2,7 +2,6 @@ package com.vv.personal.diurnal.ping.controller.health;
 
 import com.vv.personal.diurnal.artifactory.generated.ResponsePrimitiveProto;
 import com.vv.personal.diurnal.interaction.util.DiurnalUtil;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +18,6 @@ public class HealthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(HealthController.class);
 
     @GetMapping("/ping")
-    @ApiOperation(value = "ping for heartbeat", hidden = true)
     ResponsePrimitiveProto.ResponsePrimitive ping() {
         String pingResult = "ALIVE-" + System.currentTimeMillis();
         LOGGER.info("PINGING back with status {}", pingResult);
