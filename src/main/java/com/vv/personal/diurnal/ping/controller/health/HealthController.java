@@ -2,8 +2,7 @@ package com.vv.personal.diurnal.ping.controller.health;
 
 import com.vv.personal.diurnal.artifactory.generated.ResponsePrimitiveProto;
 import com.vv.personal.diurnal.interaction.util.DiurnalUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Vivek
  * @since 07/12/20
  */
+@Slf4j
 @RestController("health-controller")
 @RequestMapping("/health")
 public class HealthController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HealthController.class);
 
     @GetMapping("/ping")
     ResponsePrimitiveProto.ResponsePrimitive ping() {
         String pingResult = "ALIVE-" + System.currentTimeMillis();
-        LOGGER.info("PINGING back with status {}", pingResult);
+        log.info("PINGING back with status {}", pingResult);
         return DiurnalUtil.generateResponsePrimitiveString(pingResult);
     }
 }

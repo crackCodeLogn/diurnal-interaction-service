@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Scope;
 public class HealthConfig {
 
     @Value("${ping.timeout:7}")
-    private int pingTimeout;
+    int pingTimeout;
 
     @Value("${ping.retry.count:5}")
-    private int pingRetryCount;
+    int pingRetryCount;
 
     @Value("${ping.retry.timeout:3}")
-    private int pingRetryTimeout;
+    int pingRetryTimeout;
 
     @Scope("prototype")
     @Bean(value = "Pinger", destroyMethod = "destroyExecutor")
