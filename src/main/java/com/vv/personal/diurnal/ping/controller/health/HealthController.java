@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     @GetMapping("/ping")
-    ResponsePrimitiveProto.ResponsePrimitive ping() {
+    public ResponsePrimitiveProto.ResponsePrimitive ping() {
         String pingResult = "ALIVE-" + System.currentTimeMillis();
         log.info("PINGING back with status {}", pingResult);
         return DiurnalUtil.generateResponsePrimitiveString(pingResult);
