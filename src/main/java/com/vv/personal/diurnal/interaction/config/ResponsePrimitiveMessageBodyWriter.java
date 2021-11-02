@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("application/x-protobuf")
 public class ResponsePrimitiveMessageBodyWriter implements MessageBodyWriter<ResponsePrimitiveProto.ResponsePrimitive> {
+
     @Override
     public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
         return ResponsePrimitiveProto.ResponsePrimitive.class.isAssignableFrom(aClass);
@@ -31,9 +32,7 @@ public class ResponsePrimitiveMessageBodyWriter implements MessageBodyWriter<Res
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void writeTo(ResponsePrimitiveProto.ResponsePrimitive responsePrimitive, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap, OutputStream outputStream) throws IOException, WebApplicationException {
-        multivaluedMap.add("x-proto-type", responsePrimitive.getDescriptorForType().getFullName());
         outputStream.write(responsePrimitive.toByteArray());
     }
 }

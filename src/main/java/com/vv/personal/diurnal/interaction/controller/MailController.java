@@ -14,8 +14,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -28,10 +26,12 @@ import static com.vv.personal.diurnal.interaction.util.DiurnalUtil.generateOtpMa
  * @since 07/03/21
  */
 @Slf4j
+@Secured("user")
 @RequestMapping("/diurnal/mail")
 @RestController("mail-controller")
-@SecurityScheme(securitySchemeName = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
+//@SecurityScheme(securitySchemeName = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class MailController {
+    private static final String APPLICATION_X_PROTOBUF = "application/x-protobuf";
     private static final ResponsePrimitiveProto.ResponsePrimitive RESPOND_TRUE_BOOL = ResponsePrimitiveProto.ResponsePrimitive.newBuilder().setBoolResponse(true).build();
     private static final ResponsePrimitiveProto.ResponsePrimitive RESPOND_FALSE_BOOL = ResponsePrimitiveProto.ResponsePrimitive.newBuilder().setBoolResponse(false).build();
 
@@ -45,10 +45,7 @@ public class MailController {
     private static final ConcurrentHashMap<String, Integer> otpMap = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Timer> otpTimerMap = new ConcurrentHashMap<>();
 
-    @PostMapping("/generate/otp")
-    @Secured("user")
-    @Consumes("application/x-protobuf")
-    @Produces("application/x-protobuf")
+    @PostMapping(value = "/generate/otp", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
     public ResponsePrimitiveProto.ResponsePrimitive generateOtp(@RequestBody OtpMailProto.OtpMail otpMail) {
         final String email = refineEmail(otpMail.getEmail());
         if (otpMap.containsKey(email)) {
@@ -79,7 +76,7 @@ public class MailController {
                 .getBoolResponse();
     }
 
-    @PostMapping("/verify/otp")
+    @PostMapping(value = "/verify/otp", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
     public ResponsePrimitiveProto.ResponsePrimitive verifyOtp(@RequestBody OtpMailProto.OtpMail otpMail) {
         final String email = refineEmail(otpMail.getEmail());
         if (otpMap.containsKey(email)) {

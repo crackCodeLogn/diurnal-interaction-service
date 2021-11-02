@@ -14,7 +14,7 @@ import javax.mail.internet.InternetAddress;
 @Slf4j
 public class EmailSender {
 
-    public Boolean sendOtpMessage(Message message, String singleRecipient, String subject, String text) {
+    public boolean sendOtpMessage(Message message, String singleRecipient, String subject, String text) {
         try {
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(singleRecipient));
             message.setSubject(subject);
@@ -27,7 +27,7 @@ public class EmailSender {
         return false;
     }
 
-    private Boolean sendMail(Message message, String text) throws MessagingException {
+    private boolean sendMail(Message message, String text) throws MessagingException {
         log.info("Sending email to [{}], title: [{}], body: [{}]", message.getAllRecipients()[0], message.getSubject(), text);
         Transport.send(message);
         log.info("Mail dispatched to [{}]", message.getAllRecipients()[0]);

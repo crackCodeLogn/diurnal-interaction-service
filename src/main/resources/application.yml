@@ -18,9 +18,9 @@ quarkus:
           itachi: user
         users:
           itachi: ${INTERACTION_USER_CRED}
-  swagger-ui:
-    path: /swagger-ui
-    always-include: true
+    #swagger-ui:
+    #path: /swagger-ui
+    #always-include: true
   http:
     port: ${SERVER_PORT:25642}
   log:
