@@ -1,14 +1,9 @@
-spring:
-  application:
-    name: diurnal-interaction-service
-    heroku: ${spring.application.name}.herokuapp.com
-  security:
-    user:
-      name: ${SPRING_SECURITY_USERNAME:user}
-      password: ${SPRING_SECURITY_CRED:default}
+app:
+  name: diurnal-interaction-service
+  heroku: ${app.name}.herokuapp.com
 
 quarkus:
-  profile: ${SPRING_PROFILE:local}
+  profile: ${PROFILE:local}
   security:
     users:
       embedded:
