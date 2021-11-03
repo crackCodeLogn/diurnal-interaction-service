@@ -25,7 +25,8 @@
         <protobuf-util.version>3.18.1</protobuf-util.version>
         <sun-mail.version>1.6.2</sun-mail.version>
         <heroku-maven.version>3.0.4</heroku-maven.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>1.18.22</lombok.version>
+        <diurnal-artifactory.version>1.0-SNAPSHOT</diurnal-artifactory.version>
     </properties>
 
     <dependencyManagement>
@@ -93,7 +94,7 @@
         <dependency>
             <groupId>com.vv.personal</groupId>
             <artifactId>diurnal-artifactory</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${diurnal-artifactory.version}</version>
         </dependency>
 
         <dependency>
