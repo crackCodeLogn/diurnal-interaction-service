@@ -1,34 +1,23 @@
 package com.vv.personal.diurnal.interaction.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import io.smallrye.config.ConfigMapping;
 
 /**
  * @author Vivek
  * @since 07/03/21
  */
-@Configuration
-public class OtpConfig {
+@ConfigMapping(prefix = "otp")
+public interface OtpConfig {
 
-    @Value("${otp.mail.length:8}")
-    private Integer otpMailLength;
+    int mailLength();
 
-    @Value("${otp.sms.length:8}")
-    private Integer otpSmsLength;
+    int smsLength();
 
-    public Integer getOtpStartRangeForMail() {
-        return (int) Math.pow(10, otpMailLength - 1);
+    default Integer getOtpStartRangeForMail() {
+        return (int) Math.pow(10, mailLength() - 1.0);
     }
 
-    public Integer getOtpEndRangeForMail() {
-        return (int) Math.pow(10, otpMailLength) - 1;
-    }
-
-    public int getOtpMailLength() {
-        return otpMailLength;
-    }
-
-    public int getOtpSmsLength() {
-        return otpSmsLength;
+    default Integer getOtpEndRangeForMail() {
+        return (int) Math.pow(10, smsLength()) - 1;
     }
 }
