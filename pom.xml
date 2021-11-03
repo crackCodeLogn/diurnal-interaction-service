@@ -20,8 +20,6 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>2.4.0.Final</quarkus.platform.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-        <apache-commons.version>3.11</apache-commons.version>
-        <spring-fox-boot-starter.version>3.0.0</spring-fox-boot-starter.version>
         <protobuf-util.version>3.18.1</protobuf-util.version>
         <sun-mail.version>1.6.2</sun-mail.version>
         <heroku-maven.version>3.0.4</heroku-maven.version>
@@ -65,10 +63,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
