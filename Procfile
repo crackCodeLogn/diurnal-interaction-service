@@ -1,1 +1,1 @@
-web: java -Xmx$APP_MAX_HEAP -Dquarkus.http.port=$PORT -jar target/quarkus-app/quarkus-run.jar
+web: java -Xmx$APP_MAX_HEAP -Dquarkus.http.port=$PORT -Dquarkus.profile=prod -jar target/quarkus-app/quarkus-run.jar
