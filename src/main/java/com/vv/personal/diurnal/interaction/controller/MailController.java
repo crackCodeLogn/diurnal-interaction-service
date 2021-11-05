@@ -8,8 +8,6 @@ import com.vv.personal.diurnal.interaction.config.OtpConfig;
 import com.vv.personal.diurnal.interaction.util.DiurnalUtil;
 import com.vv.personal.diurnal.interaction.util.TimerUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +29,7 @@ import static com.vv.personal.diurnal.interaction.util.DiurnalUtil.generateOtpMa
 @RestController("mail-controller")
 //@SecurityScheme(securitySchemeName = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class MailController {
-    private static final String APPLICATION_X_PROTOBUF = "application/x-protobuf";
+    public static final String APPLICATION_X_PROTOBUF = "application/x-protobuf";
     private static final ResponsePrimitiveProto.ResponsePrimitive RESPOND_TRUE_BOOL = ResponsePrimitiveProto.ResponsePrimitive.newBuilder().setBoolResponse(true).build();
     private static final ResponsePrimitiveProto.ResponsePrimitive RESPOND_FALSE_BOOL = ResponsePrimitiveProto.ResponsePrimitive.newBuilder().setBoolResponse(false).build();
 

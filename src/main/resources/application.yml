@@ -3,7 +3,6 @@ app:
   heroku: ${app.name}.herokuapp.com
 
 quarkus:
-  profile: ${PROFILE:local}
   security:
     users:
       embedded:
