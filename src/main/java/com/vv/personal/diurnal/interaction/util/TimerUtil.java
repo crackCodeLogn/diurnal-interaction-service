@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.ToIntFunction;
+import java.util.function.UnaryOperator;
 
 /**
  * @author Vivek
@@ -26,6 +27,15 @@ public class TimerUtil {
             @Override
             public void run() {
                 functionToRunPostTimeout.applyAsInt(input);
+            }
+        };
+    }
+
+    public static TimerTask generateTimedTask(UnaryOperator<String> functionToRunPostTimeout, String input) {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                functionToRunPostTimeout.apply(input);
             }
         };
     }

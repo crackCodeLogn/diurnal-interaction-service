@@ -37,3 +37,7 @@ mail:
 otp:
   mail-length: ${OTP_MAIL_LENGTH:8}
   sms-length: ${OTP_SMS_LENGTH:8}
+
+token:
+  length: ${TOKEN_LENGTH:45}
+  expiry: ${TOKEN_EXPIRY:900}

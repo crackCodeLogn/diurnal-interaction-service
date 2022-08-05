@@ -2,3 +2,6 @@ mail:
   otp:
     timeout:
       minutes: 1
+
+token:
+  expiry: 60
