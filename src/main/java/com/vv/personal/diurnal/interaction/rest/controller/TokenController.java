@@ -1,8 +1,8 @@
-package com.vv.personal.diurnal.interaction.controller;
+package com.vv.personal.diurnal.interaction.rest.controller;
 
 import com.vv.personal.diurnal.artifactory.generated.TokenProto;
-import com.vv.personal.diurnal.interaction.config.BeanStore;
-import com.vv.personal.diurnal.interaction.config.TokenConfig;
+import com.vv.personal.diurnal.interaction.service.config.BeanStore;
+import com.vv.personal.diurnal.interaction.service.config.TokenConfig;
 import com.vv.personal.diurnal.interaction.util.TimerUtil;
 import com.vv.personal.diurnal.interaction.util.TokenUtil;
 import lombok.extern.slf4j.Slf4j;

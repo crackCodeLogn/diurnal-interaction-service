@@ -1,4 +1,4 @@
-package com.vv.personal.diurnal.interaction.config;
+package com.vv.personal.diurnal.interaction.service.config;
 
 import io.smallrye.config.ConfigMapping;
 

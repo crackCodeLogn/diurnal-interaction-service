@@ -1,15 +1,20 @@
-package com.vv.personal.diurnal.interaction.controller;
+package com.vv.personal.diurnal.interaction.rest.controller;
 
 import com.vv.personal.diurnal.artifactory.generated.OtpMailProto;
 import com.vv.personal.diurnal.artifactory.generated.ResponsePrimitiveProto;
-import com.vv.personal.diurnal.interaction.config.BeanStore;
-import com.vv.personal.diurnal.interaction.config.MailOtpConfig;
-import com.vv.personal.diurnal.interaction.config.OtpConfig;
+import com.vv.personal.diurnal.interaction.service.config.BeanStore;
+import com.vv.personal.diurnal.interaction.service.config.MailOtpConfig;
+import com.vv.personal.diurnal.interaction.service.config.OtpConfig;
 import com.vv.personal.diurnal.interaction.util.DiurnalUtil;
 import com.vv.personal.diurnal.interaction.util.TimerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
 import java.util.HashSet;

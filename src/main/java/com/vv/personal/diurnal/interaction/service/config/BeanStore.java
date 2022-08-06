@@ -1,4 +1,4 @@
-package com.vv.personal.diurnal.interaction.config;
+package com.vv.personal.diurnal.interaction.service.config;
 
 import com.vv.personal.diurnal.interaction.mail.EmailSender;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import javax.inject.Inject;
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;

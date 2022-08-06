@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.vv.personal.diurnal.interaction.controller.MailController.APPLICATION_X_PROTOBUF;
+import static com.vv.personal.diurnal.interaction.rest.controller.MailController.APPLICATION_X_PROTOBUF;
 
 /**
  * @author Vivek
