@@ -1,4 +1,4 @@
-package com.vv.personal.diurnal.interaction.service.config;
+package com.vv.personal.diurnal.interaction.transmission.writer;
 
 import com.vv.personal.diurnal.artifactory.generated.ResponsePrimitiveProto;
 

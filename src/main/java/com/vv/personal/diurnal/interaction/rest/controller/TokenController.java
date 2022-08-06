@@ -44,7 +44,7 @@ public class TokenController {
     private final TokenConfig tokenConfig;
     private final UserMappingService userMappingService;
 
-    @PostMapping(value = "/generate/token", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
+    @PostMapping(value = "/generate", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
     public TokenProto.TokenShell generateToken(@RequestBody TokenProto.TokenShell tokenShell) {
         final String email = refineEmail(tokenShell.getEmail());
         if (!userMappingService.isUserExistent(email)) {
@@ -63,12 +63,12 @@ public class TokenController {
     }
 
     @Secured("user")
-    @GetMapping(value = "/generate/manual/token", produces = TEXT_PLAIN)
+    @GetMapping(value = "/generate/manual", produces = TEXT_PLAIN)
     public String generateTokenManually(@RequestParam String rxEmail) {
         return generateToken(TokenUtil.generateTokenShell(rxEmail)).getToken();
     }
 
-    @PostMapping(value = "/verify/token", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
+    @PostMapping(value = "/verify", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
     public TokenProto.TokenShell verifyToken(@RequestBody TokenProto.TokenShell tokenShell) {
         final String email = refineEmail(tokenShell.getEmail());
         if (tokenMap.containsKey(email)) {
@@ -87,7 +87,7 @@ public class TokenController {
     }
 
     @Secured("user")
-    @GetMapping(value = "/verify/manual/token", produces = TEXT_PLAIN)
+    @GetMapping(value = "/verify/manual", produces = TEXT_PLAIN)
     public String verifyTokenManually(@RequestParam String email, @RequestParam String token) {
         return verifyToken(TokenUtil.generateTokenShell(email, token)).getToken();
     }
