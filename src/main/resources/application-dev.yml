@@ -5,3 +5,10 @@ mail:
 
 token:
   expiry: 60
+
+quarkus:
+  datasource:
+    jdbc:
+      url: jdbc:postgresql://localhost:${CRDB_PORT}/${CRDB_DB}
+    username: root
+    password:

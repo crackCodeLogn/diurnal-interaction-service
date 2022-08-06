@@ -1,5 +1,7 @@
 package com.vv.personal.diurnal.interaction.service.config;
 
+import com.vv.personal.diurnal.interaction.data.dao.UserMappingDao;
+import com.vv.personal.diurnal.interaction.data.repository.UserMappingRepository;
 import com.vv.personal.diurnal.interaction.mail.EmailSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,6 +59,11 @@ public class BeanStore {
     @Bean
     public EmailSender emailSender() {
         return new EmailSender();
+    }
+
+    @Bean
+    public UserMappingDao userMappingDao(UserMappingRepository userMappingRepository) {
+        return new UserMappingDao(userMappingRepository);
     }
 
     @Bean

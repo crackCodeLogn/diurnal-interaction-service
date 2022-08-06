@@ -3,6 +3,8 @@ app:
   heroku: ${app.name}.herokuapp.com
 
 quarkus:
+  datasource:
+    db-kind: postgresql
   security:
     users:
       embedded:

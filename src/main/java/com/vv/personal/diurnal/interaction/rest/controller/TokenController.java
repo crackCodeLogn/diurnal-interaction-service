@@ -1,10 +1,12 @@
 package com.vv.personal.diurnal.interaction.rest.controller;
 
 import com.vv.personal.diurnal.artifactory.generated.TokenProto;
+import com.vv.personal.diurnal.interaction.data.dao.UserMappingDao;
 import com.vv.personal.diurnal.interaction.service.config.BeanStore;
 import com.vv.personal.diurnal.interaction.service.config.TokenConfig;
 import com.vv.personal.diurnal.interaction.util.TimerUtil;
 import com.vv.personal.diurnal.interaction.util.TokenUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 07/03/21
  */
 @Slf4j
+@AllArgsConstructor
 @RequestMapping("/diurnal/token")
 @RestController("token-controller")
 public class TokenController {
@@ -35,16 +37,20 @@ public class TokenController {
     private static final TokenProto.TokenShell RESPOND_TOKEN_INCORRECT = TokenProto.TokenShell.newBuilder().setToken("-1").build();
     private static final TokenProto.TokenShell RESPOND_TOKEN_EXPIRED = TokenProto.TokenShell.newBuilder().setToken("-11").build();
     private static final TokenProto.TokenShell RESPOND_TOKEN_ALREADY_GENERATED = TokenProto.TokenShell.newBuilder().setToken("-12").build();
+    private static final TokenProto.TokenShell RESPOND_TOKEN_FOR_USER_NON_EXISTENT = TokenProto.TokenShell.newBuilder().setToken("-13").build();
     private static final ConcurrentHashMap<String, String> tokenMap = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Timer> tokenTimerMap = new ConcurrentHashMap<>();
-    @Inject
-    BeanStore beanStore;
-    @Inject
-    TokenConfig tokenConfig;
+    private final BeanStore beanStore;
+    private final TokenConfig tokenConfig;
+    private final UserMappingDao userMappingDao;
 
     @PostMapping(value = "/generate/token", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
     public TokenProto.TokenShell generateToken(@RequestBody TokenProto.TokenShell tokenShell) {
         final String email = refineEmail(tokenShell.getEmail());
+        if (!userMappingDao.isUserExistent(email)) {
+            log.warn("No user record for {}, thus no token generation", email);
+            return RESPOND_TOKEN_FOR_USER_NON_EXISTENT;
+        }
         if (tokenMap.containsKey(email)) {
             log.warn("Token already in use for [{}]!", email);
             return RESPOND_TOKEN_ALREADY_GENERATED;
