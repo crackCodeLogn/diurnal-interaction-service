@@ -3,6 +3,8 @@ package com.vv.personal.diurnal.interaction.service.config;
 import com.vv.personal.diurnal.interaction.data.dao.UserMappingDao;
 import com.vv.personal.diurnal.interaction.data.repository.UserMappingRepository;
 import com.vv.personal.diurnal.interaction.mail.EmailSender;
+import com.vv.personal.diurnal.interaction.service.UserMappingService;
+import com.vv.personal.diurnal.interaction.service.impl.UserMappingServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -64,6 +66,11 @@ public class BeanStore {
     @Bean
     public UserMappingDao userMappingDao(UserMappingRepository userMappingRepository) {
         return new UserMappingDao(userMappingRepository);
+    }
+
+    @Bean
+    public UserMappingService userMappingService(UserMappingDao userMappingDao) {
+        return new UserMappingServiceImpl(userMappingDao);
     }
 
     @Bean

@@ -1,7 +1,7 @@
 package com.vv.personal.diurnal.interaction.rest.controller;
 
 import com.vv.personal.diurnal.artifactory.generated.TokenProto;
-import com.vv.personal.diurnal.interaction.data.dao.UserMappingDao;
+import com.vv.personal.diurnal.interaction.service.UserMappingService;
 import com.vv.personal.diurnal.interaction.service.config.BeanStore;
 import com.vv.personal.diurnal.interaction.service.config.TokenConfig;
 import com.vv.personal.diurnal.interaction.util.TimerUtil;
@@ -42,12 +42,12 @@ public class TokenController {
     private static final ConcurrentHashMap<String, Timer> tokenTimerMap = new ConcurrentHashMap<>();
     private final BeanStore beanStore;
     private final TokenConfig tokenConfig;
-    private final UserMappingDao userMappingDao;
+    private final UserMappingService userMappingService;
 
     @PostMapping(value = "/generate/token", produces = APPLICATION_X_PROTOBUF, consumes = APPLICATION_X_PROTOBUF)
     public TokenProto.TokenShell generateToken(@RequestBody TokenProto.TokenShell tokenShell) {
         final String email = refineEmail(tokenShell.getEmail());
-        if (!userMappingDao.isUserExistent(email)) {
+        if (!userMappingService.isUserExistent(email)) {
             log.warn("No user record for {}, thus no token generation", email);
             return RESPOND_TOKEN_FOR_USER_NON_EXISTENT;
         }
